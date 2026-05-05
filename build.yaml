@@ -2,7 +2,7 @@
 name: "Trakt"
 guid: "4fe3201e-d6ae-4f2e-8917-e12bda571281"
 imageUrl: "https://repo.jellyfin.org/releases/plugin/images/jellyfin-plugin-trakt.png"
-version: 28
+version: 29
 targetAbi: "10.11.8.0"
 framework: "net9.0"
 owner: "jellyfin"
@@ -14,15 +14,4 @@ category: "General"
 artifacts:
   - "Trakt.dll"
 changelog: |-
-  - Bump .NET version to 9.0 in README (#277) @zotabee
-  - Fix PCM audio handling (#278) @zotabee
-  - Enhance channel layouts mapping (#279) @zotabee
-  - Fix Trakt 3D metadata null value parsing (#282) @martinenko7
-  - Reword Trakt settings UI for clarity and usability (#252) @n00bcodr
-
-  ### Dependency updates ###
-  - Pin jellyfin/jellyfin-meta-plugins action to 672e46d - autoclosed (#283) @[renovate[bot]](https://github.com/apps/renovate)
-  - Update dependency Microsoft.Extensions.Http to v10 (#263) @[renovate[bot]](https://github.com/apps/renovate)
-
-  ### CI & build changes ###
-  - Pin jellyfin/jellyfin-meta-plugins action to 672e46d - autoclosed (#283) @[renovate[bot]](https://github.com/apps/renovate)
+  - Revert "Update dependency Microsoft.Extensions.Http to v10" (#268) @Shadowghost
