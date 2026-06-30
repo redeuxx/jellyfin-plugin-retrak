@@ -1,50 +1,71 @@
-<h1 align="center">Trakt for Jellyfin Plugin</h1>
-<h3 align="center">Part of the <a href="https://jellyfin.org">Jellyfin Project</a></h3>
+# ReTrak for Jellyfin
 
-<p align="center">
-<img alt="Plugin Banner" src="https://raw.githubusercontent.com/jellyfin/jellyfin-ux/master/plugins/SVG/jellyfin-plugin-trakt.svg?sanitize=true"/>
-<br/>
-<br/>
-<a href="https://github.com/jellyfin/jellyfin-plugin-trakt/actions?query=workflow%3A%22Test+Build+Plugin%22">
-<img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/jellyfin/jellyfin-plugin-trakt/Test%20Build%20Plugin.svg">
-</a>
-<a href="https://github.com/jellyfin/jellyfin-plugin-trakt">
-<img alt="MIT License" src="https://img.shields.io/github/license/jellyfin/jellyfin-plugin-trakt.svg"/>
-</a>
-<a href="https://github.com/jellyfin/jellyfin-plugin-trakt/releases">
-<img alt="Current Release" src="https://img.shields.io/github/release/jellyfin/jellyfin-plugin-trakt.svg"/>
-</a>
-</p>
+ReTrak for Jellyfin is a server plugin that scrobbles playback progress and synchronizes watched history and collections with your [ReTrak](https://retrak.tv) profile.
 
-## About
+## Features
 
-Available for install through the plugin catalog, Trakt for Jellyfin allows you to synchronize your watch states with ease.
+- **Real-time scrobbles**: Reports play, pause, resume, and stop events from any Jellyfin client to ReTrak.
+- **Library synchronization**: Syncs movie and show watched states between Jellyfin and ReTrak.
+- **Collection sync**: Syncs your Jellyfin library to your ReTrak collection.
+- **Per-user API keys**: Admins configure the server URL; each user supplies their own `dnt_` API key.
+
+## Requirements
+
+- Jellyfin 10.11+
+- .NET 9 SDK (for building from source)
+- A ReTrak account with an API key from **Settings**
 
 ## Installation
 
-[See the official documentation for install instructions](https://jellyfin.org/docs/general/server/plugins/index.html#installing).
+### From a release (recommended)
 
-## Build
+1. Download the latest plugin zip from [GitHub Releases](https://github.com/redeuxx/jellyfin-plugin-retrak/releases).
+2. In the Jellyfin dashboard, go to **Dashboard > Plugins > Repositories** and add the release manifest, or install the zip manually.
+3. Restart Jellyfin.
 
-1. To build this plugin you will need [.Net 9.x](https://dotnet.microsoft.com/download/dotnet/9.0).
+### Build from source
 
-2. Build plugin with following command
-  ```
-  dotnet publish --configuration Release --output bin
-  ```
+```bash
+dotnet publish ReTrak/ReTrak.csproj --configuration Release --output bin
+```
 
-3. Place the dll-file in the `plugins/trakt` folder (you might need to create the folders) of your JF install
+Copy `ReTrak.dll` into your Jellyfin `plugins/ReTrak` folder and restart the server.
 
-## Releasing
+## Configuration
 
-To release the plugin we recommend [JPRM](https://github.com/oddstr13/jellyfin-plugin-repository-manager) that will build and package the plugin.
-For additional context and for how to add the packaged plugin zip to a plugin manifest see the [JPRM documentation](https://github.com/oddstr13/jellyfin-plugin-repository-manager) for more info.
+### Admin setup
 
-## Contributing
+1. Open **Dashboard > Plugins > ReTrak**.
+2. Set the **ReTrak URL** (defaults to `https://retrak.tv`).
+3. Select a Jellyfin user and paste their **ReTrak API key** (`dnt_...`).
+4. Adjust sync and scrobble options, then save.
 
-We welcome all contributions and pull requests! If you have a larger feature in mind please open an issue so we can discuss the implementation before you start.
-In general refer to our [contributing guidelines](https://github.com/jellyfin/.github/blob/master/CONTRIBUTING.md) for further information.
+### Per-user setup
 
-## Licence
+Users who are not admins can open this URL directly (replace the host with your server):
 
-This plugins code and packages are distributed under the MIT License. See [LICENSE](./LICENSE.md) for more information.
+```text
+https://<your-jellyfin-server>/web/index.html#!/configurationpage?name=retrakuser
+```
+
+They can enter their own API key and sync preferences there.
+
+## Scheduled tasks
+
+Two tasks appear under **Dashboard > Scheduled Tasks**:
+
+| Task | Purpose |
+| --- | --- |
+| Import watched states and playback progress from ReTrak | Pulls watch state from ReTrak into Jellyfin |
+| Export library playstates to ReTrak | Pushes Jellyfin watch state and collections to ReTrak |
+
+Run these on a schedule that fits your library size and sync needs.
+
+## Related projects
+
+- [ReTrak](https://github.com/redeuxx/ReTrak) - the web app and API
+- [retrak-emby](https://github.com/redeuxx/retrak-emby) - the Emby server plugin
+
+## License
+
+MIT. See [LICENSE.md](./LICENSE.md).

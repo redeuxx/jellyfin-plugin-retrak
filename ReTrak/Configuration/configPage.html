@@ -1,0 +1,153 @@
+<div id="retrakConfigurationPage" data-role="page"
+    class="page type-interior pluginConfigurationPage retrakConfigurationPage" data-controller="__plugin/retrakjs">
+    <div data-role="content">
+        <div class="content-primary">
+
+            <h1>ReTrak</h1>
+
+            <div class="readOnlyContent" style="background: var(--background-secondary, #2b2b2b); padding: 15px 20px; border-radius: 6px; border-left: 4px solid #00d4aa; margin-bottom: 2em;">
+                <p style="font-weight: bold; margin: 0;">
+                    Non-admin users can configure their own API key at:
+                </p>
+                <code style="user-select: all; display: inline-block; margin-top: 8px;">/web/index.html#!/configurationpage?name=retrakuser</code>
+            </div>
+
+            <form id="retrakConfigurationForm">
+
+                <div style="height:0; overflow: hidden;">
+                    <input type="text" name="fakeusernameremembered" tabindex="-1" />
+                    <input type="password" name="fakepasswordremembered" tabindex="-1" />
+                </div>
+
+                <div class="inputContainer">
+                    <input is="emby-input" id="txtReTrakUrl" name="txtReTrakUrl" type="text" label="ReTrak URL:" />
+                    <div class="fieldDescription">
+                        The URL of your ReTrak instance (e.g. <code>https://retrak.tv</code>).
+                    </div>
+                </div>
+
+                <div class="selectContainer">
+                    <select is="emby-select" id="selectUser" name="selectUser" label="Configure ReTrak for:"></select>
+                </div>
+
+                <div class="inputContainer">
+                    <input is="emby-input" id="txtAccessToken" name="txtAccessToken" type="text" label="ReTrak API Key:" />
+                    <div class="fieldDescription">
+                        Enter the user's personal API key (prefixed with <code>dnt_</code>) from ReTrak settings.
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="checkboxListLabel">Exclude library folders:</h3>
+                    <div id="divReTrakLocations" class="paperList checkboxList checkboxList-paperList">
+                    </div>
+                </div>
+                <br />
+
+                <h2 style="margin-top: 2em;">Import from ReTrak to Jellyfin</h2>
+
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="chkSkipWatchedImportFromReTrak"
+                            name="chkSkipWatchedImportFromReTrak" />
+                        <span>Keep Jellyfin's watched status (don't import from ReTrak)</span>
+                    </label>
+                    <div class="fieldDescription checkboxFieldDescription">
+                        Prevents Jellyfin from marking items as watched based on ReTrak data.
+                    </div>
+                </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="chkSkipUnwatchedImportFromReTrak"
+                            name="chkSkipUnwatchedImportFromReTrak" />
+                        <span>Keep Jellyfin's unwatched status (don't import from ReTrak)</span>
+                    </label>
+                </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="chkSkipPlaybackProgressImportFromReTrak"
+                            name="chkSkipPlaybackProgressImportFromReTrak" />
+                        <span>Don't import playback progress</span>
+                    </label>
+                </div>
+
+                <br />
+
+                <h2 style="margin-top: 2em;">Sync from Jellyfin to ReTrak</h2>
+
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="chkScrobble" name="chkScrobble" />
+                        <span>Enable scrobbling (live watching status)</span>
+                    </label>
+                </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="chkPostSetWatched" name="chkPostSetWatched" />
+                        <span>Instantly mark as watched on ReTrak</span>
+                    </label>
+                </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="chkPostSetUnwatched" name="chkPostSetUnwatched" />
+                        <span>Instantly mark as unwatched on ReTrak</span>
+                    </label>
+                </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="chkPostWatchedHistory"
+                            name="chkPostWatchedHistory" />
+                        <span>Sync watched items during scheduled task</span>
+                    </label>
+                </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="chkPostUnwatchedHistory"
+                            name="chkPostUnwatchedHistory" />
+                        <span>Sync unwatched items during scheduled task</span>
+                    </label>
+                </div>
+
+                <br />
+
+                <h2 style="margin-top: 2em;">Collection sync</h2>
+
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="chkSyncCollections" name="chkSyncCollections" />
+                        <span>Sync Jellyfin library to ReTrak collection</span>
+                    </label>
+                </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="chkDontRemoveItemFromReTrak" name="chkDontRemoveItemFromReTrak" />
+                        <span>Don't remove from ReTrak when deleted from Jellyfin</span>
+                    </label>
+                </div>
+
+                <br />
+
+                <h2 style="margin-top: 2em;">Advanced</h2>
+
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="chkExportMediaInfo" name="chkExportMediaInfo" />
+                        <span>Send media technical info to ReTrak</span>
+                    </label>
+                </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="chkExtraLogging" name="chkExtraLogging" />
+                        <span>Enable debug logging</span>
+                    </label>
+                </div>
+
+                <div>
+                    <button is="emby-button" type="submit" class="raised button-submit block emby-button">
+                        <span>Save</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
