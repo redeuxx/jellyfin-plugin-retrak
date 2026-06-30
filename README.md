@@ -17,11 +17,25 @@ ReTrak for Jellyfin is a server plugin that scrobbles playback progress and sync
 
 ## Installation
 
-### From a release (recommended)
+### From the plugin catalog (recommended)
+
+1. In Jellyfin, go to **Dashboard > Plugins > Repositories**.
+2. Click **+** and add this manifest URL:
+
+   ```text
+   https://raw.githubusercontent.com/redeuxx/jellyfin-plugin-retrak/master/manifest-release/manifest.json
+   ```
+
+3. Restart Jellyfin (or refresh the plugin catalog).
+4. Go to **Dashboard > Plugins > Catalog**, find **ReTrak**, and install.
+5. Restart Jellyfin again after installation.
+
+### From a GitHub release (manual)
 
 1. Download the latest plugin zip from [GitHub Releases](https://github.com/redeuxx/jellyfin-plugin-retrak/releases).
-2. In the Jellyfin dashboard, go to **Dashboard > Plugins > Repositories** and add the release manifest, or install the zip manually.
-3. Restart Jellyfin.
+2. Extract `ReTrak.dll` into `<jellyfin-data>/plugins/ReTrak/`.
+3. Ensure the plugin folder is writable by the Jellyfin service user.
+4. Restart Jellyfin.
 
 ### Build from source
 
