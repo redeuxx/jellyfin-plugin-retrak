@@ -15,46 +15,6 @@
       "sourceUrl": "https://github.com/redeuxx/jellyfin-plugin-retrak/releases/download/v1.0.5/retrak_1.0.5.0.zip",
       "checksum": "aeb059f746c4e63379c3e0c70a6fb6f8",
       "timestamp": "2026-07-01T02:44:41Z"
-    },
-    {
-      "version": "1.0.4.0",
-      "changelog": "Pin Jellyfin API to 10.11.9 to fix plugin load on matching servers",
-      "targetAbi": "10.11.9.0",
-      "sourceUrl": "https://github.com/redeuxx/jellyfin-plugin-retrak/releases/download/v1.0.4/retrak_1.0.4.0.zip",
-      "checksum": "f25181a5dedf8e4545912122adaa8dc0",
-      "timestamp": "2026-07-01T01:58:30Z"
-    },
-    {
-      "version": "1.0.3.0",
-      "changelog": "Fix plugin catalog manifest format for Jellyfin",
-      "targetAbi": "10.11.9.0",
-      "sourceUrl": "https://github.com/redeuxx/jellyfin-plugin-retrak/releases/download/v1.0.3/retrak_1.0.3.0.zip",
-      "checksum": "f37459c1858a9135518afd95b26f0519",
-      "timestamp": "2026-07-01T01:24:21Z"
-    },
-    {
-      "version": "1.0.2.0",
-      "changelog": "Remove unsupported Jellyfin-to-ReTrak watch/unwatch sync; scrobble, import, and collection sync remain",
-      "targetAbi": "10.11.9.0",
-      "sourceUrl": "https://github.com/redeuxx/jellyfin-plugin-retrak/releases/download/v1.0.2/retrak_1.0.2.0.zip",
-      "checksum": "b5b6875483075d6a02b28140f7bf6e16",
-      "timestamp": "2026-07-01T01:17:15Z"
-    },
-    {
-      "version": "1.0.1.0",
-      "changelog": "Add ReTrak logo for plugin catalog and dashboard display",
-      "targetAbi": "10.11.9.0",
-      "sourceUrl": "https://github.com/redeuxx/jellyfin-plugin-retrak/releases/download/v1.0.1/retrak_1.0.1.0.zip",
-      "checksum": "a83df12e7827518c40353e84043c7776",
-      "timestamp": "2026-07-01T00:00:00Z"
-    },
-    {
-      "version": "1.0.0.0",
-      "changelog": "Initial ReTrak plugin release for Jellyfin",
-      "targetAbi": "10.11.9.0",
-      "sourceUrl": "https://github.com/redeuxx/jellyfin-plugin-retrak/releases/download/v1.0.0/retrak_1.0.0.0.zip",
-      "checksum": "a0b87f7418f5249b8c61821947a99dc5",
-      "timestamp": "2026-06-30T23:49:18Z"
     }
   ]
 }

@@ -332,6 +332,13 @@ if (-not (Test-Path $zipPath)) {
 }
 
 if (-not (Test-Path $dllPath)) {
+    $builtDll = Join-Path $repoRoot "ReTrak\bin\Release\net9.0\$dllName"
+    if (Test-Path $builtDll) {
+        Copy-Item -Path $builtDll -Destination $dllPath -Force
+    }
+}
+
+if (-not (Test-Path $dllPath)) {
     throw "Expected plugin DLL was not created: $dllPath"
 }
 
