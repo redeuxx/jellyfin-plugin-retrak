@@ -182,7 +182,6 @@ gh auth login
 
 ## Related projects
 
-- [ReTrak](https://github.com/redeuxx/ReTrak) - the web app and API
 - [retrak-emby](https://github.com/redeuxx/retrak-emby) - the Emby server plugin
 
 ## License
