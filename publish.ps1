@@ -182,8 +182,8 @@ function Repair-Manifest {
         Remove-Item -Recurse -Force $retrakDir
     }
 
-    $hash = (Get-FileHash -Path $ZipPath -Algorithm SHA256).Hash.ToLowerInvariant()
-    $checksum = "sha256:$hash"
+    $hash = (Get-FileHash -Path $ZipPath -Algorithm MD5).Hash.ToLowerInvariant()
+    $checksum = $hash
     $timestamp = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
 
     $manifest = Get-Content -Path $ManifestPath -Raw | ConvertFrom-Json
