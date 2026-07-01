@@ -13,10 +13,6 @@ const ReTrakConfigurationPage = {
                     SkipUnwatchedImportFromReTrak: true,
                     SkipWatchedImportFromReTrak: false,
                     SkipPlaybackProgressImportFromReTrak: false,
-                    PostWatchedHistory: true,
-                    PostUnwatchedHistory: true,
-                    PostSetWatched: true,
-                    PostSetUnwatched: true,
                     ExtraLogging: false,
                     ExportMediaInfo: false,
                     SynchronizeCollections: true,
@@ -30,10 +26,6 @@ const ReTrakConfigurationPage = {
             page.querySelector('#chkSkipUnwatchedImportFromReTrak').checked = currentUserConfig.SkipUnwatchedImportFromReTrak;
             page.querySelector('#chkSkipWatchedImportFromReTrak').checked = currentUserConfig.SkipWatchedImportFromReTrak;
             page.querySelector('#chkSkipPlaybackProgressImportFromReTrak').checked = currentUserConfig.SkipPlaybackProgressImportFromReTrak;
-            page.querySelector('#chkPostWatchedHistory').checked = currentUserConfig.PostWatchedHistory;
-            page.querySelector('#chkPostUnwatchedHistory').checked = currentUserConfig.PostUnwatchedHistory;
-            page.querySelector('#chkPostSetWatched').checked = currentUserConfig.PostSetWatched;
-            page.querySelector('#chkPostSetUnwatched').checked = currentUserConfig.PostSetUnwatched;
             page.querySelector('#chkExtraLogging').checked = currentUserConfig.ExtraLogging;
             page.querySelector('#chkExportMediaInfo').checked = currentUserConfig.ExportMediaInfo;
             page.querySelector('#chkSyncCollections').checked = currentUserConfig.SynchronizeCollections;
@@ -107,10 +99,6 @@ function save(page) {
             currentUserConfig.SkipUnwatchedImportFromReTrak = page.querySelector('#chkSkipUnwatchedImportFromReTrak').checked;
             currentUserConfig.SkipWatchedImportFromReTrak = page.querySelector('#chkSkipWatchedImportFromReTrak').checked;
             currentUserConfig.SkipPlaybackProgressImportFromReTrak = page.querySelector('#chkSkipPlaybackProgressImportFromReTrak').checked;
-            currentUserConfig.PostWatchedHistory = page.querySelector('#chkPostWatchedHistory').checked;
-            currentUserConfig.PostUnwatchedHistory = page.querySelector('#chkPostUnwatchedHistory').checked;
-            currentUserConfig.PostSetWatched = page.querySelector('#chkPostSetWatched').checked;
-            currentUserConfig.PostSetUnwatched = page.querySelector('#chkPostSetUnwatched').checked;
             currentUserConfig.ExtraLogging = page.querySelector('#chkExtraLogging').checked;
             currentUserConfig.ExportMediaInfo = page.querySelector('#chkExportMediaInfo').checked;
             currentUserConfig.SynchronizeCollections = page.querySelector('#chkSyncCollections').checked;

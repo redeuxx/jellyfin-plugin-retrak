@@ -29,8 +29,6 @@ public class ServerMediator : IHostedService, IDisposable
     private readonly ILibraryManager _libraryManager;
     private readonly ILogger<ServerMediator> _logger;
     private readonly ISessionManager _sessionManager;
-    private readonly IUserDataManager _userDataManager;
-    private readonly UserDataManagerEventsHelper _userDataManagerEventsHelper;
     private readonly LibraryManagerEventsHelper _libraryManagerEventsHelper;
     private readonly ReTrakApi _retrakApi;
     private readonly Dictionary<Guid, PlaybackState> _playbackState;
@@ -39,7 +37,6 @@ public class ServerMediator : IHostedService, IDisposable
     /// Initializes a new instance of the <see cref="ServerMediator"/> class.
     /// </summary>
     /// <param name="sessionManager">The <see cref="ISessionManager"/>.</param>
-    /// <param name="userDataManager">The <see cref="IUserDataManager"/>.</param>
     /// <param name="libraryManager">The <see cref="ILibraryManager"/>.</param>
     /// <param name="loggerFactory">The <see cref="ILoggerFactory"/>.</param>
     /// <param name="httpClientFactory">The <see cref="IHttpClientFactory"/>.</param>
@@ -47,7 +44,6 @@ public class ServerMediator : IHostedService, IDisposable
     /// <param name="userManager">The <see cref="IUserManager"/>.</param>
     public ServerMediator(
         ISessionManager sessionManager,
-        IUserDataManager userDataManager,
         ILibraryManager libraryManager,
         ILoggerFactory loggerFactory,
         IHttpClientFactory httpClientFactory,
@@ -56,49 +52,12 @@ public class ServerMediator : IHostedService, IDisposable
     {
         _sessionManager = sessionManager;
         _libraryManager = libraryManager;
-        _userDataManager = userDataManager;
 
         _logger = loggerFactory.CreateLogger<ServerMediator>();
         _playbackState = new Dictionary<Guid, PlaybackState>();
 
-        _retrakApi = new ReTrakApi(loggerFactory.CreateLogger<ReTrakApi>(), httpClientFactory, appHost, userDataManager, userManager);
+        _retrakApi = new ReTrakApi(loggerFactory.CreateLogger<ReTrakApi>(), httpClientFactory, appHost, userManager);
         _libraryManagerEventsHelper = new LibraryManagerEventsHelper(loggerFactory.CreateLogger<LibraryManagerEventsHelper>(), _retrakApi);
-        _userDataManagerEventsHelper = new UserDataManagerEventsHelper(loggerFactory.CreateLogger<UserDataManagerEventsHelper>(), _retrakApi);
-    }
-
-    /// <summary>
-    /// User data was saved.
-    /// </summary>
-    /// <param name="sender">The sending entity.</param>
-    /// <param name="userDataSaveEventArgs">The <see cref="UserDataSaveEventArgs"/>.</param>
-    private void OnUserDataSaved(object sender, UserDataSaveEventArgs userDataSaveEventArgs)
-    {
-        // Ignore change events for any reason other than manually toggling played.
-        if (userDataSaveEventArgs.SaveReason != UserDataSaveReason.TogglePlayed)
-        {
-            return;
-        }
-
-        if (userDataSaveEventArgs.Item != null)
-        {
-            // Determine if user has ReTrak credentials
-            var retrakUser = UserHelper.GetReTrakUser(userDataSaveEventArgs.UserId, true);
-
-            // Can't progress if user has no ReTrak credentials
-            if (retrakUser == null || !_retrakApi.CanSync(userDataSaveEventArgs.Item, retrakUser))
-            {
-                return;
-            }
-
-            if (!retrakUser.PostSetWatched && !retrakUser.PostSetUnwatched)
-            {
-                // User doesn't want to post any status changes at all
-                return;
-            }
-
-            // We have a user who wants to post updates and the item is in a ReTrak monitored location
-            _userDataManagerEventsHelper.ProcessUserDataSaveEventArgs(userDataSaveEventArgs, retrakUser);
-        }
     }
 
     /// <summary>
@@ -480,7 +439,6 @@ public class ServerMediator : IHostedService, IDisposable
     /// <inheritdoc />
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _userDataManager.UserDataSaved += OnUserDataSaved;
         _sessionManager.PlaybackStart += KernelPlaybackStart;
         _sessionManager.PlaybackProgress += KernelPlaybackProgress;
         _sessionManager.PlaybackStopped += KernelPlaybackStopped;
@@ -494,7 +452,6 @@ public class ServerMediator : IHostedService, IDisposable
     /// <inheritdoc />
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        _userDataManager.UserDataSaved -= OnUserDataSaved;
         _sessionManager.PlaybackStart -= KernelPlaybackStart;
         _sessionManager.PlaybackStopped -= KernelPlaybackStopped;
         _sessionManager.PlaybackProgress -= KernelPlaybackProgress;
@@ -519,7 +476,6 @@ public class ServerMediator : IHostedService, IDisposable
     {
         if (disposing)
         {
-            _userDataManagerEventsHelper?.Dispose();
             _libraryManagerEventsHelper?.Dispose();
         }
     }

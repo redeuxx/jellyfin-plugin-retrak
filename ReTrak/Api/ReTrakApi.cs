@@ -25,7 +25,6 @@ using ReTrak.Api.DataContracts.Scrobble;
 using ReTrak.Api.DataContracts.Sync;
 using ReTrak.Api.DataContracts.Sync.Collection;
 using ReTrak.Api.DataContracts.Sync.Ratings;
-using ReTrak.Api.DataContracts.Sync.Watched;
 using ReTrak.Model;
 using ReTrak.Model.Enums;
 using ReTrakEpisodeCollected = ReTrak.Api.DataContracts.Sync.Collection.ReTrakEpisodeCollected;
@@ -46,7 +45,6 @@ public class ReTrakApi
     private readonly ILogger<ReTrakApi> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IServerApplicationHost _appHost;
-    private readonly IUserDataManager _userDataManager;
     private readonly IUserManager _userManager;
     private readonly JsonSerializerOptions _jsonOptions = JsonDefaults.Options;
 
@@ -56,18 +54,15 @@ public class ReTrakApi
     /// <param name="logger">The logger.</param>
     /// <param name="httpClientFactory">The <see cref="IHttpClientFactory"/>.</param>
     /// <param name="appHost">The <see cref="IServerApplicationHost"/>.</param>
-    /// <param name="userDataManager">The <see cref="IUserDataManager"/>.</param>
     /// <param name="userManager">The <see cref="IUserManager"/>.</param>
     public ReTrakApi(
         ILogger<ReTrakApi> logger,
         IHttpClientFactory httpClientFactory,
         IServerApplicationHost appHost,
-        IUserDataManager userDataManager,
         IUserManager userManager)
     {
         _httpClientFactory = httpClientFactory;
         _appHost = appHost;
-        _userDataManager = userDataManager;
         _userManager = userManager;
         _logger = logger;
     }
@@ -692,222 +687,6 @@ public class ReTrakApi
         return await GetFromReTrak<List<DataContracts.Users.Collection.ReTrakShowCollected>>(ReTrakUris.CollectedShows, retrakUser).ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Send a list of movies to ReTrak that have been marked as watched or unwatched.
-    /// </summary>
-    /// <param name="movies">The list of movies to send.</param>
-    /// <param name="retrakUser">The <see cref="ReTrakUser"/> who's library is being updated.</param>
-    /// <param name="seen">True if movies are being marked seen, false otherwise.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Task{List{ReTrakSyncResponse}}.</returns>
-    // TODO: netstandard2.1: use IAsyncEnumerable
-    public async Task<List<ReTrakSyncResponse>> SendMoviePlaystateUpdates(
-        ICollection<Movie> movies,
-        ReTrakUser retrakUser,
-        bool seen,
-        CancellationToken cancellationToken)
-    {
-        ArgumentNullException.ThrowIfNull(movies);
-        ArgumentOutOfRangeException.ThrowIfZero(movies.Count);
-        ArgumentNullException.ThrowIfNull(retrakUser);
-
-        var user = _userManager.GetUserById(retrakUser.LinkedMbUserId);
-        if (user is null)
-        {
-            _logger.LogWarning("User id ({UserId}) linked to ReTrak does not exist", retrakUser.LinkedMbUserId);
-            return null;
-        }
-
-        var moviesPayload = movies.Select(m =>
-        {
-            var lastPlayedDate = seen
-                ? _userDataManager.GetUserData(user, m).LastPlayedDate
-                : null;
-
-            return new ReTrakMovieWatched
-            {
-                Title = m.Name,
-                Ids = GetReTrakIMDBTMDBIds<Movie, ReTrakMovieId>(m),
-                Year = m.ProductionYear,
-                WatchedAt = lastPlayedDate?.ToISO8601()
-            };
-        });
-
-        var chunks = moviesPayload.Chunk(100).ToList();
-        var retrakResponses = new List<ReTrakSyncResponse>();
-
-        foreach (var chunk in chunks)
-        {
-            var data = new ReTrakSyncWatched
-            {
-                Movies = chunk.ToList()
-            };
-
-            var url = seen ? ReTrakUris.SyncWatchedHistoryAdd : ReTrakUris.SyncWatchedHistoryRemove;
-            var response = await PostToReTrak<ReTrakSyncResponse>(url, data, retrakUser, cancellationToken).ConfigureAwait(false);
-            if (response != null)
-            {
-                retrakResponses.Add(response);
-            }
-        }
-
-        return retrakResponses;
-    }
-
-    /// <summary>
-    /// Send a list of episodes to ReTrak that have been marked watched or unwatched.
-    /// </summary>
-    /// <param name="episodes">The list of episodes to send.</param>
-    /// <param name="retrakUser">The <see cref="ReTrakUser"/> who's library is being updated.</param>
-    /// <param name="seen">True if episodes are being marked seen, false otherwise.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Task{List{ReTrakSyncResponse}}.</returns>
-    public async Task<List<ReTrakSyncResponse>> SendEpisodePlaystateUpdates(
-        ICollection<Episode> episodes,
-        ReTrakUser retrakUser,
-        bool seen,
-        CancellationToken cancellationToken)
-    {
-        ArgumentNullException.ThrowIfNull(episodes);
-        ArgumentOutOfRangeException.ThrowIfZero(episodes.Count);
-        ArgumentNullException.ThrowIfNull(retrakUser);
-
-        var chunks = episodes.Chunk(100);
-        var retrakResponses = new List<ReTrakSyncResponse>();
-
-        foreach (var chunk in chunks)
-        {
-            var response = await SendEpisodePlaystateUpdatesInternalAsync(chunk, retrakUser, seen, cancellationToken).ConfigureAwait(false);
-
-            if (response != null)
-            {
-                retrakResponses.Add(response);
-            }
-        }
-
-        return retrakResponses;
-    }
-
-    private async Task<ReTrakSyncResponse> SendEpisodePlaystateUpdatesInternalAsync(
-        IReadOnlyList<Episode> episodeChunk,
-        ReTrakUser retrakUser,
-        bool seen,
-        CancellationToken cancellationToken,
-        bool useProviderIds = true)
-    {
-        var user = _userManager.GetUserById(retrakUser.LinkedMbUserId);
-        if (user is null)
-        {
-            _logger.LogWarning("User id ({UserId}) linked to ReTrak does not exist", retrakUser.LinkedMbUserId);
-            return null;
-        }
-
-        var data = new ReTrakSyncWatched
-        {
-            Episodes = new List<ReTrakEpisodeWatched>(),
-            Shows = new List<ReTrakShowWatched>()
-        };
-
-        foreach (var episode in episodeChunk)
-        {
-            var lastPlayedDate = seen
-                ? _userDataManager.GetUserData(user, episode)
-                    .LastPlayedDate
-                : null;
-
-            if (useProviderIds
-                && HasAnyProviderTvIds(episode)
-                && (!episode.IndexNumber.HasValue
-                    || !episode.IndexNumberEnd.HasValue
-                    || episode.IndexNumberEnd <= episode.IndexNumber))
-            {
-                data.Episodes.Add(new ReTrakEpisodeWatched
-                {
-                    Ids = GetReTrakTvIds<Episode, ReTrakEpisodeId>(episode),
-                    WatchedAt = lastPlayedDate.HasValue ? lastPlayedDate.Value.ToISO8601() : null
-                });
-            }
-            else if (episode.IndexNumber != null)
-            {
-                var indexNumber = episode.IndexNumber.Value;
-                var finalNumber = (episode.IndexNumberEnd ?? episode.IndexNumber).Value;
-
-                var syncShow = FindShow(data.Shows, episode.Series);
-                if (syncShow == null)
-                {
-                    syncShow = new ReTrakShowWatched
-                    {
-                        Ids = GetReTrakTvIds<Series, ReTrakShowId>(episode.Series),
-                        Seasons = new List<ReTrakSeasonWatched>()
-                    };
-
-                    data.Shows.Add(syncShow);
-                }
-
-                var syncSeason = syncShow.Seasons.FirstOrDefault(ss => ss.Number == episode.GetSeasonNumber());
-                if (syncSeason == null)
-                {
-                    syncSeason = new ReTrakSeasonWatched
-                    {
-                        Number = episode.GetSeasonNumber(),
-                        Episodes = new List<ReTrakEpisodeWatched>()
-                    };
-
-                    syncShow.Seasons.Add(syncSeason);
-                }
-
-                for (var number = indexNumber; number <= finalNumber; number++)
-                {
-                    syncSeason.Episodes.Add(new ReTrakEpisodeWatched
-                    {
-                        Number = number,
-                        WatchedAt = lastPlayedDate.HasValue ? lastPlayedDate.Value.ToISO8601() : null
-                    });
-                }
-            }
-        }
-
-        var url = seen ? ReTrakUris.SyncWatchedHistoryAdd : ReTrakUris.SyncWatchedHistoryRemove;
-
-        var response = await PostToReTrak<ReTrakSyncResponse>(url, data, retrakUser, cancellationToken).ConfigureAwait(false);
-
-        if (useProviderIds && response.NotFound.Episodes.Count > 0)
-        {
-            // Send subset of episodes back to ReTrak to try without ids
-            _logger.LogDebug("Resend episodes playstate update, without episode ids");
-            await SendEpisodePlaystateUpdatesInternalAsync(FindNotFoundEpisodes(episodeChunk, response), retrakUser, seen, cancellationToken, false).ConfigureAwait(false);
-        }
-
-        return response;
-    }
-
-    private List<Episode> FindNotFoundEpisodes(IReadOnlyList<Episode> episodeChunk, ReTrakSyncResponse retrakSyncResponse)
-    {
-        // Episodes not found. If using ids, try again without them
-        List<Episode> episodes = new List<Episode>();
-        // Build a list of unfound episodes with ids
-        foreach (ReTrakEpisode retrakEpisode in retrakSyncResponse.NotFound.Episodes.Where(episode => HasAnyProviderTvIds(episode.Ids)))
-        {
-            // Find matching episode in Jellyfin based on provider ids
-            var notFoundEpisode = episodeChunk.FirstOrDefault(episode =>
-                (episode.TryGetProviderId(MetadataProvider.Imdb, out var imdbId)
-                 && imdbId == retrakEpisode.Ids.Imdb)
-                || (episode.TryGetProviderId(MetadataProvider.Tmdb, out var tmdbId)
-                    && tmdbId == retrakEpisode.Ids.Tmdb?.ToString(CultureInfo.InvariantCulture))
-                || (episode.TryGetProviderId(MetadataProvider.Tvdb, out var tvdbId)
-                    && tvdbId == retrakEpisode.Ids.Tvdb)
-                || (episode.TryGetProviderId(MetadataProvider.TvRage, out var tvRageId)
-                    && tvRageId == retrakEpisode.Ids.Tvrage));
-
-            if (notFoundEpisode != null)
-            {
-                episodes.Add(notFoundEpisode);
-            }
-        }
-
-        return episodes;
-    }
-
     private Task<T> GetFromReTrak<T>(string url, ReTrakUser retrakUser)
     {
         return GetFromReTrak<T>(url, retrakUser, CancellationToken.None);
@@ -1173,5 +952,29 @@ public class ReTrakApi
                || !(item.Tmdb == null)
                || !string.IsNullOrEmpty(item.Tvdb)
                || !string.IsNullOrEmpty(item.Tvrage);
+    }
+
+    private List<Episode> FindNotFoundEpisodes(IReadOnlyList<Episode> episodeChunk, ReTrakSyncResponse retrakSyncResponse)
+    {
+        var episodes = new List<Episode>();
+        foreach (ReTrakEpisode retrakEpisode in retrakSyncResponse.NotFound.Episodes.Where(episode => HasAnyProviderTvIds(episode.Ids)))
+        {
+            var notFoundEpisode = episodeChunk.FirstOrDefault(episode =>
+                (episode.TryGetProviderId(MetadataProvider.Imdb, out var imdbId)
+                 && imdbId == retrakEpisode.Ids.Imdb)
+                || (episode.TryGetProviderId(MetadataProvider.Tmdb, out var tmdbId)
+                    && tmdbId == retrakEpisode.Ids.Tmdb?.ToString(CultureInfo.InvariantCulture))
+                || (episode.TryGetProviderId(MetadataProvider.Tvdb, out var tvdbId)
+                    && tvdbId == retrakEpisode.Ids.Tvdb)
+                || (episode.TryGetProviderId(MetadataProvider.TvRage, out var tvRageId)
+                    && tvRageId == retrakEpisode.Ids.Tvrage));
+
+            if (notFoundEpisode != null)
+            {
+                episodes.Add(notFoundEpisode);
+            }
+        }
+
+        return episodes;
     }
 }

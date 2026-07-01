@@ -92,7 +92,7 @@ Two tasks appear under **Dashboard > Scheduled Tasks**:
 | Task | Purpose |
 | --- | --- |
 | Import watched states and playback progress from ReTrak | Pulls watch state from ReTrak into Jellyfin |
-| Export library playstates to ReTrak | Pushes Jellyfin watch state and collections to ReTrak |
+| Export library to ReTrak | Pushes Jellyfin collection metadata to ReTrak |
 
 Run these on a schedule that fits your library size and sync needs.
 

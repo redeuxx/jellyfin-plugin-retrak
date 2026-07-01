@@ -31,14 +31,12 @@ public class ReTrakController : ControllerBase
     /// <summary>
     /// Initializes a new instance of the <see cref="ReTrakController"/> class.
     /// </summary>
-    /// <param name="userDataManager">Instance of the <see cref="IUserDataManager"/> interface.</param>
     /// <param name="loggerFactory">Instance of the <see cref="ILoggerFactory"/> interface.</param>
     /// <param name="libraryManager">Instance of the <see cref="ILibraryManager"/> interface.</param>
     /// <param name="httpClientFactory">Instance of the <see cref="IHttpClientFactory"/> interface.</param>
     /// <param name="appHost">Instance of the <see cref="IServerApplicationHost"/> interface.</param>
     /// <param name="userManager">Instance of the <see cref="IUserManager"/> interface.</param>
     public ReTrakController(
-        IUserDataManager userDataManager,
         ILoggerFactory loggerFactory,
         IHttpClientFactory httpClientFactory,
         IServerApplicationHost appHost,
@@ -46,7 +44,7 @@ public class ReTrakController : ControllerBase
         IUserManager userManager)
     {
         _logger = loggerFactory.CreateLogger<ReTrakController>();
-        _retrakApi = new ReTrakApi(loggerFactory.CreateLogger<ReTrakApi>(), httpClientFactory, appHost, userDataManager, userManager);
+        _retrakApi = new ReTrakApi(loggerFactory.CreateLogger<ReTrakApi>(), httpClientFactory, appHost, userManager);
         _libraryManager = libraryManager;
     }
 

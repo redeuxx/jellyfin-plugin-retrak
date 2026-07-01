@@ -58,7 +58,7 @@ public class SyncFromReTrakTask : IScheduledTask
         _userDataManager = userDataManager;
         _libraryManager = libraryManager;
         _logger = loggerFactory.CreateLogger<SyncFromReTrakTask>();
-        _retrakApi = new ReTrakApi(loggerFactory.CreateLogger<ReTrakApi>(), httpClientFactory, appHost, userDataManager, userManager);
+        _retrakApi = new ReTrakApi(loggerFactory.CreateLogger<ReTrakApi>(), httpClientFactory, appHost, userManager);
     }
 
     /// <inheritdoc />

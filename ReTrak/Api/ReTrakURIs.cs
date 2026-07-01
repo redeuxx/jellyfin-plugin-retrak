@@ -53,16 +53,6 @@ public static class ReTrakUris
     public static string SyncCollectionRemove => $"{BaseUrl}/sync/collection/remove";
 
     /// <summary>
-    /// Gets the watched history add endpoint.
-    /// </summary>
-    public static string SyncWatchedHistoryAdd => $"{BaseUrl}/sync/history";
-
-    /// <summary>
-    /// Gets the watched history remove endpoint.
-    /// </summary>
-    public static string SyncWatchedHistoryRemove => $"{BaseUrl}/sync/history/remove";
-
-    /// <summary>
     /// Gets the ratings sync endpoint.
     /// </summary>
     public static string SyncRatingsAdd => $"{BaseUrl}/sync/ratings";

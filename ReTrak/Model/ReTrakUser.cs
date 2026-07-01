@@ -19,10 +19,6 @@ public class ReTrakUser
         SkipUnwatchedImportFromReTrak = true;
         SkipWatchedImportFromReTrak = false;
         SkipPlaybackProgressImportFromReTrak = false;
-        PostWatchedHistory = true;
-        PostUnwatchedHistory = true;
-        PostSetWatched = true;
-        PostSetUnwatched = true;
         ExtraLogging = false;
         ExportMediaInfo = false;
         SynchronizeCollections = true;
@@ -56,26 +52,6 @@ public class ReTrakUser
     /// Gets or sets a value indicating whether the skip watched import option is enabled or not.
     /// </summary>
     public bool SkipWatchedImportFromReTrak { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the watch history should be posted or not.
-    /// </summary>
-    public bool PostWatchedHistory { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the unwatch history should be posted or not.
-    /// </summary>
-    public bool PostUnwatchedHistory { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether setting an item to watched should be posted or not.
-    /// </summary>
-    public bool PostSetWatched { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the setting an item to unwatched should be posted or not.
-    /// </summary>
-    public bool PostSetUnwatched { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether extra logging is enabled or not.

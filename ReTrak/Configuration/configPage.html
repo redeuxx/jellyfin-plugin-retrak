@@ -80,57 +80,16 @@
 
                 <br />
 
-                <h2 style="margin-top: 2em;">Sync from Jellyfin to ReTrak</h2>
-                <p class="fieldDescription">Control how your Jellyfin viewing activity is sent to your ReTrak account.</p>
+                <h2 style="margin-top: 2em;">Playback sync (Jellyfin to ReTrak)</h2>
+                <p class="fieldDescription">Watching something in Jellyfin records real watch history on ReTrak via scrobbling. Manual watched/unwatched toggles in Jellyfin are not synced.</p>
 
-                <h3 class="checkboxListLabel">Instant Sync (As it happens)</h3>
                 <div class="checkboxContainer checkboxContainer-withDescription">
                     <label>
                         <input is="emby-checkbox" type="checkbox" id="chkScrobble" name="chkScrobble" />
                         <span>Enable Scrobbling (Live Watching Status)</span>
                     </label>
                     <div class="fieldDescription checkboxFieldDescription">
-                        Tells ReTrak what you're watching in real-time. Recommended to be enabled for most users.
-                    </div>
-                </div>
-                <div class="checkboxContainer checkboxContainer-withDescription">
-                    <label>
-                        <input is="emby-checkbox" type="checkbox" id="chkPostSetWatched" name="chkPostSetWatched" />
-                        <span>Instantly mark as 'watched' on ReTrak</span>
-                    </label>
-                    <div class="fieldDescription checkboxFieldDescription">
-                        When you watch something on Jellyfin, immediately update it on ReTrak.
-                    </div>
-                </div>
-                <div class="checkboxContainer checkboxContainer-withDescription">
-                    <label>
-                        <input is="emby-checkbox" type="checkbox" id="chkPostSetUnwatched" name="chkPostSetUnwatched" />
-                        <span>Instantly mark as 'unwatched' on ReTrak</span>
-                    </label>
-                    <div class="fieldDescription checkboxFieldDescription">
-                        When you manually mark something as unwatched in Jellyfin, immediately update it on ReTrak.
-                    </div>
-                </div>
-
-                <h3 class="checkboxListLabel" style="margin-top: 1.5em;">Scheduled Sync (During background task)</h3>
-                <div class="checkboxContainer checkboxContainer-withDescription">
-                    <label>
-                        <input is="emby-checkbox" type="checkbox" id="chkPostWatchedHistory"
-                            name="chkPostWatchedHistory" />
-                        <span>Sync 'watched' items during scheduled task</span>
-                    </label>
-                    <div class="fieldDescription checkboxFieldDescription">
-                        During the periodic sync, tell ReTrak what has been watched on Jellyfin.
-                    </div>
-                </div>
-                <div class="checkboxContainer checkboxContainer-withDescription">
-                    <label>
-                        <input is="emby-checkbox" type="checkbox" id="chkPostUnwatchedHistory"
-                            name="chkPostUnwatchedHistory" />
-                        <span>Sync 'unwatched' items during scheduled task</span>
-                    </label>
-                    <div class="fieldDescription checkboxFieldDescription">
-                        During the periodic sync, tell ReTrak what has been marked unwatched on Jellyfin.
+                        Tells ReTrak what you're watching in real-time and records a history entry when you finish (80%+ watched).
                     </div>
                 </div>
 
@@ -166,7 +125,7 @@
                         <span>Send media technical info to ReTrak (3D, HDR, etc.)</span>
                     </label>
                     <div class="fieldDescription checkboxFieldDescription">
-                        Sends extra technical data about the file (audio/video codecs, resolution) to ReTrak when scrobbling.
+                        Sends extra technical data about the file (audio/video codecs, resolution) to ReTrak when syncing your collection.
                     </div>
                 </div>
                 <div class="checkboxContainer checkboxContainer-withDescription">
