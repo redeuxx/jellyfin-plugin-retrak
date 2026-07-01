@@ -16,4 +16,4 @@ imageUrl: "https://raw.githubusercontent.com/redeuxx/jellyfin-plugin-retrak/mast
 artifacts:
   - "ReTrak.dll"
 changelog: |-
-  - Fix plugin catalog manifest format for Jellyfin
+  - test
