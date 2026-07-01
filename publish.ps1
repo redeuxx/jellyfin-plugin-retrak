@@ -186,8 +186,9 @@ function Repair-Manifest {
     $checksum = $hash
     $timestamp = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
 
-    $manifest = Get-Content -Path $ManifestPath -Raw | ConvertFrom-Json
-    $plugin = $manifest[0]
+    $rawManifest = Get-Content -Path $ManifestPath -Raw | ConvertFrom-Json
+    $plugins = @($rawManifest)
+    $plugin = $plugins[0]
 
     $plugin.imageUrl = $ImageUrl
     if ($plugin.PSObject.Properties.Match('image').Count -gt 0) {
@@ -204,7 +205,7 @@ function Repair-Manifest {
     $versionEntry.checksum = $checksum
     $versionEntry.timestamp = $timestamp
 
-    $json = $manifest | ConvertTo-Json -Depth 10
+    $json = $plugins | ConvertTo-Json -Depth 10
     Set-Content -Path $ManifestPath -Value $json -NoNewline
 
     return $checksum
