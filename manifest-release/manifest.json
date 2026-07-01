@@ -1,37 +1,43 @@
-[
-  {
-    "guid": "4e2945d8-c6df-4613-bc75-c54d193d58ef",
-    "name": "ReTrak",
-    "description": "Scrobble playback, sync watched states, and keep your ReTrak collection up to date from Jellyfin.",
-    "overview": "Sync your Jellyfin library and watch history with ReTrak",
-    "owner": "redeuxx",
-    "category": "General",
-    "imageUrl": "https://raw.githubusercontent.com/redeuxx/jellyfin-plugin-retrak/master/logo.jpg",
-    "versions": [
-      {
-        "version": "1.0.2.0",
-        "changelog": "Remove unsupported Jellyfin-to-ReTrak watch/unwatch sync; scrobble, import, and collection sync remain",
-        "targetAbi": "10.11.9.0",
-        "sourceUrl": "https://github.com/redeuxx/jellyfin-plugin-retrak/releases/download/v1.0.2/retrak_1.0.2.0.zip",
-        "checksum": "b5b6875483075d6a02b28140f7bf6e16",
-        "timestamp": "2026-07-01T01:17:15Z"
-      },
-      {
-        "version": "1.0.1.0",
-        "changelog": "Add ReTrak logo for plugin catalog and dashboard display",
-        "targetAbi": "10.11.9.0",
-        "sourceUrl": "https://github.com/redeuxx/jellyfin-plugin-retrak/releases/download/v1.0.1/retrak_1.0.1.0.zip",
-        "checksum": "a83df12e7827518c40353e84043c7776",
-        "timestamp": "2026-07-01T00:00:00Z"
-      },
-      {
-        "version": "1.0.0.0",
-        "changelog": "Initial ReTrak plugin release for Jellyfin",
-        "targetAbi": "10.11.9.0",
-        "sourceUrl": "https://github.com/redeuxx/jellyfin-plugin-retrak/releases/download/v1.0.0/retrak_1.0.0.0.zip",
-        "checksum": "a0b87f7418f5249b8c61821947a99dc5",
-        "timestamp": "2026-06-30T23:49:18Z"
-      }
-    ]
-  }
-]
+{
+    "guid":  "4e2945d8-c6df-4613-bc75-c54d193d58ef",
+    "name":  "ReTrak",
+    "description":  "Scrobble playback, sync watched states, and keep your ReTrak collection up to date from Jellyfin.\n",
+    "overview":  "Sync your Jellyfin library and watch history with ReTrak",
+    "owner":  "redeuxx",
+    "category":  "General",
+    "imageUrl":  "https://raw.githubusercontent.com/redeuxx/jellyfin-plugin-retrak/master/logo.jpg",
+    "versions":  [
+                     {
+                         "version":  "1.0.3.0",
+                         "changelog":  "Fix plugin catalog manifest format for Jellyfin",
+                         "targetAbi":  "10.11.9.0",
+                         "sourceUrl":  "https://github.com/redeuxx/jellyfin-plugin-retrak/releases/download/v1.0.3/retrak_1.0.3.0.zip",
+                         "checksum":  "f37459c1858a9135518afd95b26f0519",
+                         "timestamp":  "2026-07-01T01:24:21Z"
+                     },
+                     {
+                         "version":  "1.0.2.0",
+                         "changelog":  "Remove unsupported Jellyfin-to-ReTrak watch/unwatch sync; scrobble, import, and collection sync remain",
+                         "targetAbi":  "10.11.9.0",
+                         "sourceUrl":  "https://github.com/redeuxx/jellyfin-plugin-retrak/releases/download/v1.0.2/retrak_1.0.2.0.zip",
+                         "checksum":  "b5b6875483075d6a02b28140f7bf6e16",
+                         "timestamp":  "2026-07-01T01:17:15Z"
+                     },
+                     {
+                         "version":  "1.0.1.0",
+                         "changelog":  "Add ReTrak logo for plugin catalog and dashboard display",
+                         "targetAbi":  "10.11.9.0",
+                         "sourceUrl":  "https://github.com/redeuxx/jellyfin-plugin-retrak/releases/download/v1.0.1/retrak_1.0.1.0.zip",
+                         "checksum":  "a83df12e7827518c40353e84043c7776",
+                         "timestamp":  "2026-07-01T00:00:00Z"
+                     },
+                     {
+                         "version":  "1.0.0.0",
+                         "changelog":  "Initial ReTrak plugin release for Jellyfin",
+                         "targetAbi":  "10.11.9.0",
+                         "sourceUrl":  "https://github.com/redeuxx/jellyfin-plugin-retrak/releases/download/v1.0.0/retrak_1.0.0.0.zip",
+                         "checksum":  "a0b87f7418f5249b8c61821947a99dc5",
+                         "timestamp":  "2026-06-30T23:49:18Z"
+                     }
+                 ]
+}
