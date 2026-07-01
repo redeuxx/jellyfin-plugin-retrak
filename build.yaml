@@ -1,7 +1,7 @@
 ---
 name: "ReTrak"
 guid: "4e2945d8-c6df-4613-bc75-c54d193d58ef"
-version: "1.0.1.0"
+version: "1.0.2.0"
 targetAbi: "10.11.9.0"
 framework: "net9.0"
 owner: "redeuxx"
@@ -16,4 +16,4 @@ imageUrl: "https://raw.githubusercontent.com/redeuxx/jellyfin-plugin-retrak/mast
 artifacts:
   - "ReTrak.dll"
 changelog: |-
-  - Add ReTrak logo for plugin catalog and dashboard display
+  - Remove unsupported Jellyfin-to-ReTrak watch/unwatch sync; scrobble, import, and collection sync remain
