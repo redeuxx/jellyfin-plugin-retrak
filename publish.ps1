@@ -273,8 +273,17 @@ if (-not $SkipPublish) {
         throw "Git tag $($versionInfo.Tag) already exists. Use -Force to override or pick a new version."
     }
 
-    $remoteTag = gh release view $versionInfo.Tag --repo $githubRepoSlug 2>$null
-    if ($remoteTag -and -not $Force) {
+    $remoteTagExists = $false
+    $prevErrorAction = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    & gh release view $versionInfo.Tag --repo $githubRepoSlug 2>&1 | Out-Null
+    if ($LASTEXITCODE -eq 0) {
+        $remoteTagExists = $true
+    }
+
+    $ErrorActionPreference = $prevErrorAction
+
+    if ($remoteTagExists -and -not $Force) {
         throw "GitHub release $($versionInfo.Tag) already exists. Use -Force or pick a new version."
     }
 }
