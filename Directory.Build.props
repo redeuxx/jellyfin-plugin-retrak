@@ -1,7 +1,9 @@
 <Project>
     <PropertyGroup>
-        <Version>1.0.3.0</Version>
-        <AssemblyVersion>1.0.3.0</AssemblyVersion>
-        <FileVersion>1.0.3.0</FileVersion>
+        <Version>1.0.4.0</Version>
+        <AssemblyVersion>1.0.4.0</AssemblyVersion>
+        <FileVersion>1.0.4.0</FileVersion>
+        <!-- Must match build.yaml targetAbi major.minor.build -->
+        <JellyfinVersion>10.11.9</JellyfinVersion>
     </PropertyGroup>
 </Project>
