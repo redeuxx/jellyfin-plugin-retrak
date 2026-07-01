@@ -161,19 +161,34 @@ public class ReTrakApi
         var episodeDatas = new List<ReTrakScrobbleEpisode>();
 
         if (useProviderIds
+            && episode.Series != null
             && HasAnyProviderTvIds(episode)
             && (!episode.IndexNumber.HasValue
                 || !episode.IndexNumberEnd.HasValue
                 || episode.IndexNumberEnd <= episode.IndexNumber))
         {
+            var retrakEpisode = new ReTrakEpisode
+            {
+                Ids = GetReTrakTvIds<Episode, ReTrakEpisodeId>(episode)
+            };
+
+            if (episode.IndexNumber.HasValue)
+            {
+                retrakEpisode.Season = episode.GetSeasonNumber();
+                retrakEpisode.Number = episode.IndexNumber.Value;
+            }
+
             episodeDatas.Add(new ReTrakScrobbleEpisode
             {
                 AppDate = DateTimeOffset.Now.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
                 AppVersion = _appHost.ApplicationVersionString,
                 Progress = progressPercent,
-                Episode = new ReTrakEpisode
+                Episode = retrakEpisode,
+                Show = new ReTrakShow
                 {
-                    Ids = GetReTrakTvIds<Episode, ReTrakEpisodeId>(episode)
+                    Title = episode.Series.Name,
+                    Year = episode.Series.ProductionYear,
+                    Ids = GetReTrakTvIds<Series, ReTrakShowId>(episode.Series)
                 }
             });
         }
@@ -614,7 +629,8 @@ public class ReTrakApi
     /// <returns>Task{List{DataContracts.Users.Watched.ReTrakMovieWatched}}.</returns>
     public async Task<List<DataContracts.Users.Watched.ReTrakMovieWatched>> SendGetAllWatchedMoviesRequest(ReTrakUser retrakUser)
     {
-        return await GetFromReTrak<List<DataContracts.Users.Watched.ReTrakMovieWatched>>(ReTrakUris.WatchedMovies, retrakUser).ConfigureAwait(false);
+        return await GetFromReTrak<List<DataContracts.Users.Watched.ReTrakMovieWatched>>(ReTrakUris.WatchedMovies, retrakUser).ConfigureAwait(false)
+            ?? new List<DataContracts.Users.Watched.ReTrakMovieWatched>();
     }
 
     /// <summary>
@@ -624,7 +640,8 @@ public class ReTrakApi
     /// <returns>Task{List{DataContracts.Users.Watched.ReTrakShowWatched}}.</returns>
     public async Task<List<DataContracts.Users.Watched.ReTrakShowWatched>> SendGetWatchedShowsRequest(ReTrakUser retrakUser)
     {
-        return await GetFromReTrak<List<DataContracts.Users.Watched.ReTrakShowWatched>>(ReTrakUris.WatchedShows, retrakUser).ConfigureAwait(false);
+        return await GetFromReTrak<List<DataContracts.Users.Watched.ReTrakShowWatched>>(ReTrakUris.WatchedShows, retrakUser).ConfigureAwait(false)
+            ?? new List<DataContracts.Users.Watched.ReTrakShowWatched>();
     }
 
     /// <summary>
@@ -634,7 +651,8 @@ public class ReTrakApi
     /// <returns>Task{List{DataContracts.Sync.History.ReTrakMovieWatchedHistory}}.</returns>
     public async Task<List<DataContracts.Sync.History.ReTrakMovieWatchedHistory>> SendGetWatchedMoviesHistoryRequest(ReTrakUser retrakUser)
     {
-        return await GetFromReTrakWithPaging<DataContracts.Sync.History.ReTrakMovieWatchedHistory>(ReTrakUris.SyncWatchedMoviesHistory, retrakUser).ConfigureAwait(false);
+        return await GetFromReTrakWithPaging<DataContracts.Sync.History.ReTrakMovieWatchedHistory>(ReTrakUris.SyncWatchedMoviesHistory, retrakUser).ConfigureAwait(false)
+            ?? new List<DataContracts.Sync.History.ReTrakMovieWatchedHistory>();
     }
 
     /// <summary>
@@ -644,7 +662,8 @@ public class ReTrakApi
     /// <returns>Task{List{DataContracts.Sync.History.ReTrakEpisodeWatchedHistory}}.</returns>
     public async Task<List<DataContracts.Sync.History.ReTrakEpisodeWatchedHistory>> SendGetWatchedEpisodesHistoryRequest(ReTrakUser retrakUser)
     {
-        return await GetFromReTrakWithPaging<DataContracts.Sync.History.ReTrakEpisodeWatchedHistory>(ReTrakUris.SyncWatchedEpisodesHistory, retrakUser).ConfigureAwait(false);
+        return await GetFromReTrakWithPaging<DataContracts.Sync.History.ReTrakEpisodeWatchedHistory>(ReTrakUris.SyncWatchedEpisodesHistory, retrakUser).ConfigureAwait(false)
+            ?? new List<DataContracts.Sync.History.ReTrakEpisodeWatchedHistory>();
     }
 
     /// <summary>
@@ -654,7 +673,8 @@ public class ReTrakApi
     /// <returns>Task{List{DataContracts.Users.Playback.ReTrakMoviePaused}}.</returns>
     public async Task<List<DataContracts.Users.Playback.ReTrakMoviePaused>> SendGetAllPausedMoviesRequest(ReTrakUser retrakUser)
     {
-        return await GetFromReTrak<List<DataContracts.Users.Playback.ReTrakMoviePaused>>(ReTrakUris.PausedMovies, retrakUser).ConfigureAwait(false);
+        return await GetFromReTrak<List<DataContracts.Users.Playback.ReTrakMoviePaused>>(ReTrakUris.PausedMovies, retrakUser).ConfigureAwait(false)
+            ?? new List<DataContracts.Users.Playback.ReTrakMoviePaused>();
     }
 
     /// <summary>
@@ -664,7 +684,8 @@ public class ReTrakApi
     /// <returns>Task{List{DataContracts.Users.Playback.ReTrakEpisodePaused}}.</returns>
     public async Task<List<DataContracts.Users.Playback.ReTrakEpisodePaused>> SendGetPausedEpisodesRequest(ReTrakUser retrakUser)
     {
-        return await GetFromReTrak<List<DataContracts.Users.Playback.ReTrakEpisodePaused>>(ReTrakUris.PausedEpisodes, retrakUser).ConfigureAwait(false);
+        return await GetFromReTrak<List<DataContracts.Users.Playback.ReTrakEpisodePaused>>(ReTrakUris.PausedEpisodes, retrakUser).ConfigureAwait(false)
+            ?? new List<DataContracts.Users.Playback.ReTrakEpisodePaused>();
     }
 
     /// <summary>
@@ -751,19 +772,18 @@ public class ReTrakApi
 
                 response.EnsureSuccessStatusCode();
                 var tmpResult = await response.Content.ReadFromJsonAsync<List<T>>(_jsonOptions, cancellationToken).ConfigureAwait(false);
-                if (tmpResult != null)
+                if (tmpResult != null && tmpResult.Count > 0)
                 {
                     result.AddRange(tmpResult);
                 }
 
-                if (page < int.Parse(response.Headers.GetValues("X-Pagination-Page-Count").FirstOrDefault(page.ToString(CultureInfo.InvariantCulture)), CultureInfo.InvariantCulture))
+                var pageCount = GetPaginationPageCount(response, page);
+                if (tmpResult == null || tmpResult.Count == 0 || page >= pageCount)
                 {
-                    page++;
+                    break;
                 }
-                else
-                {
-                    break; // break loop when no more new pages are available
-                }
+
+                page++;
             }
 
             return result;
@@ -888,6 +908,17 @@ public class ReTrakApi
         return response;
     }
 
+    private static int GetPaginationPageCount(HttpResponseMessage response, int currentPage)
+    {
+        if (response.Headers.TryGetValues("X-Pagination-Page-Count", out var values)
+            && int.TryParse(values.FirstOrDefault(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var pageCount))
+        {
+            return pageCount;
+        }
+
+        return currentPage;
+    }
+
     private HttpClient GetHttpClient()
     {
         var client = _httpClientFactory.CreateClient(NamedClient.Default);
@@ -922,8 +953,8 @@ public class ReTrakApi
         where TReturn : ReTrakTVId, new()
     {
         TReturn retval = GetReTrakIMDBTMDBIds<TInput, TReturn>(mediaObject);
-        retval.Tvdb = mediaObject.GetProviderId(MetadataProvider.Tvdb);
-        retval.Tvrage = mediaObject.GetProviderId(MetadataProvider.TvRage);
+        retval.Tvdb = mediaObject.GetProviderId(MetadataProvider.Tvdb).ConvertToInt();
+        retval.Tvrage = mediaObject.GetProviderId(MetadataProvider.TvRage).ConvertToInt();
         return retval;
     }
 
@@ -934,8 +965,8 @@ public class ReTrakApi
             sre => sre.Ids != null
                    && sre.Ids.Imdb == series.GetProviderId(MetadataProvider.Imdb)
                    && sre.Ids.Tmdb == series.GetProviderId(MetadataProvider.Tmdb).ConvertToInt()
-                   && sre.Ids.Tvdb == series.GetProviderId(MetadataProvider.Tvdb)
-                   && sre.Ids.Tvrage == series.GetProviderId(MetadataProvider.TvRage));
+                   && sre.Ids.Tvdb == series.GetProviderId(MetadataProvider.Tvdb).ConvertToInt()
+                   && sre.Ids.Tvrage == series.GetProviderId(MetadataProvider.TvRage).ConvertToInt());
     }
 
     private bool HasAnyProviderTvIds(BaseItem item)
@@ -949,9 +980,9 @@ public class ReTrakApi
     private bool HasAnyProviderTvIds(ReTrakTVId item)
     {
         return !string.IsNullOrEmpty(item.Imdb)
-               || !(item.Tmdb == null)
-               || !string.IsNullOrEmpty(item.Tvdb)
-               || !string.IsNullOrEmpty(item.Tvrage);
+               || item.Tmdb.HasValue
+               || item.Tvdb.HasValue
+               || item.Tvrage.HasValue;
     }
 
     private List<Episode> FindNotFoundEpisodes(IReadOnlyList<Episode> episodeChunk, ReTrakSyncResponse retrakSyncResponse)
@@ -965,9 +996,9 @@ public class ReTrakApi
                 || (episode.TryGetProviderId(MetadataProvider.Tmdb, out var tmdbId)
                     && tmdbId == retrakEpisode.Ids.Tmdb?.ToString(CultureInfo.InvariantCulture))
                 || (episode.TryGetProviderId(MetadataProvider.Tvdb, out var tvdbId)
-                    && tvdbId == retrakEpisode.Ids.Tvdb)
+                    && tvdbId == retrakEpisode.Ids.Tvdb?.ToString(CultureInfo.InvariantCulture))
                 || (episode.TryGetProviderId(MetadataProvider.TvRage, out var tvRageId)
-                    && tvRageId == retrakEpisode.Ids.Tvrage));
+                    && tvRageId == retrakEpisode.Ids.Tvrage?.ToString(CultureInfo.InvariantCulture)));
 
             if (notFoundEpisode != null)
             {

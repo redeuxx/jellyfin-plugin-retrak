@@ -274,13 +274,39 @@ public class ServerMediator : IHostedService, IDisposable
             {
                 if (!_playbackState.TryGetValue(retrakUser.LinkedMbUserId, out state))
                 {
-                    _logger.LogWarning("Received playback progress from user {User} but initial state was never set - setting it now!", user.Username);
+                    _logger.LogWarning(
+                        "Received playback progress from user {User} but initial state was never set - sending start now!",
+                        user.Username);
                     _playbackState[retrakUser.LinkedMbUserId] = new PlaybackState
                     {
                         IsPaused = false,
                         PlaybackPositionTicks = playbackPositionTicks,
                         PlaybackTime = DateTime.UtcNow
                     };
+
+                    _logger.LogDebug(
+                        "Sending {VideoType} playback status (Watching) update to ReTrak for user {User}.",
+                        video.GetType().Name,
+                        user.Username);
+
+                    switch (video)
+                    {
+                        case Movie movie:
+                            await _retrakApi.SendMovieStatusUpdateAsync(
+                                movie,
+                                MediaStatus.Watching,
+                                retrakUser,
+                                progressPercent).ConfigureAwait(false);
+                            break;
+                        case Episode episode:
+                            await _retrakApi.SendEpisodeStatusUpdateAsync(
+                                episode,
+                                MediaStatus.Watching,
+                                retrakUser,
+                                progressPercent).ConfigureAwait(false);
+                            break;
+                    }
+
                     continue;
                 }
 
@@ -375,13 +401,24 @@ public class ServerMediator : IHostedService, IDisposable
             }
 
             var video = playbackStoppedEventArgs.Item as Video;
+            var progressPercent = video.RunTimeTicks.HasValue && video.RunTimeTicks != 0
+                ? (float)(playbackStoppedEventArgs.PlaybackPositionTicks ?? 0) / video.RunTimeTicks.Value * 100.0f
+                : 0.0f;
 
             try
             {
-                if (playbackStoppedEventArgs.PlayedToCompletion)
+                if (playbackStoppedEventArgs.PlayedToCompletion || progressPercent >= 80f)
                 {
-                    _logger.LogDebug("User {User} completed watching item {Item}. Scrobbling.", user.Username, playbackStoppedEventArgs.Item.Name);
-                    _logger.LogDebug("Sending {VideoType} playback status (Stop) update to ReTrak for user {User}.", video.GetType().Name, user.Username);
+                    var stopProgress = playbackStoppedEventArgs.PlayedToCompletion ? 100f : progressPercent;
+                    _logger.LogDebug(
+                        "User {User} finished or passed scrobble threshold on item {Item} ({Progress}%). Scrobbling.",
+                        user.Username,
+                        playbackStoppedEventArgs.Item.Name,
+                        stopProgress);
+                    _logger.LogDebug(
+                        "Sending {VideoType} playback status (Stop) update to ReTrak for user {User}.",
+                        video.GetType().Name,
+                        user.Username);
 
                     switch (video)
                     {
@@ -390,23 +427,24 @@ public class ServerMediator : IHostedService, IDisposable
                                 movie,
                                 MediaStatus.Stop,
                                 retrakUser,
-                                100).ConfigureAwait(false);
+                                stopProgress).ConfigureAwait(false);
                             break;
                         case Episode episode:
                             await _retrakApi.SendEpisodeStatusUpdateAsync(
                                 episode,
                                 MediaStatus.Stop,
                                 retrakUser,
-                                100).ConfigureAwait(false);
+                                stopProgress).ConfigureAwait(false);
                             break;
                     }
                 }
                 else
                 {
-                    var progressPercent = video.RunTimeTicks.HasValue && video.RunTimeTicks != 0 ?
-                        (float)(playbackStoppedEventArgs.PlaybackPositionTicks ?? 0) / video.RunTimeTicks.Value * 100.0f : 0.0f;
-
-                    _logger.LogDebug("User {User} didn't watch item {Item} until the end. Not scrobbling but pausing playback at current playback position.", user.Username, playbackStoppedEventArgs.Item.Name);
+                    _logger.LogDebug(
+                        "User {User} stopped early on item {Item} ({Progress}%). Pausing playback on ReTrak.",
+                        user.Username,
+                        playbackStoppedEventArgs.Item.Name,
+                        progressPercent);
 
                     switch (video)
                     {

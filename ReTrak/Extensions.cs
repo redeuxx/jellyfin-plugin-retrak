@@ -481,7 +481,8 @@ public static class Extensions
     private static bool IsMatch(Series item, ReTrakShow show)
     {
         if (item.TryGetProviderId(MetadataProvider.Tvdb, out var tvdbId)
-            && string.Equals(tvdbId, show.Ids.Tvdb, StringComparison.Ordinal))
+            && show.Ids.Tvdb.HasValue
+            && string.Equals(tvdbId, show.Ids.Tvdb.Value.ToString(CultureInfo.InvariantCulture), StringComparison.Ordinal))
         {
             return true;
         }
@@ -499,7 +500,8 @@ public static class Extensions
         }
 
         if (item.TryGetProviderId(MetadataProvider.TvRage, out var tvRageId)
-            && string.Equals(tvRageId, show.Ids.Tvrage, StringComparison.Ordinal))
+            && show.Ids.Tvrage.HasValue
+            && string.Equals(tvRageId, show.Ids.Tvrage.Value.ToString(CultureInfo.InvariantCulture), StringComparison.Ordinal))
         {
             return true;
         }
@@ -516,7 +518,8 @@ public static class Extensions
     public static bool IsMatch(Episode item, ReTrakEpisode episode)
     {
         var tvdb = item.GetProviderId(MetadataProvider.Tvdb);
-        if (!string.IsNullOrEmpty(tvdb) && string.Equals(tvdb, episode.Ids.Tvdb, StringComparison.OrdinalIgnoreCase))
+        if (!string.IsNullOrEmpty(tvdb) && episode.Ids.Tvdb.HasValue
+            && string.Equals(tvdb, episode.Ids.Tvdb.Value.ToString(CultureInfo.InvariantCulture), StringComparison.OrdinalIgnoreCase))
         {
             return true;
         }
@@ -534,7 +537,8 @@ public static class Extensions
         }
 
         var tvrage = item.GetProviderId(MetadataProvider.TvRage);
-        if (!string.IsNullOrEmpty(tvrage) && string.Equals(tvrage, episode.Ids.Tvrage, StringComparison.OrdinalIgnoreCase))
+        if (!string.IsNullOrEmpty(tvrage) && episode.Ids.Tvrage.HasValue
+            && string.Equals(tvrage, episode.Ids.Tvrage.Value.ToString(CultureInfo.InvariantCulture), StringComparison.OrdinalIgnoreCase))
         {
             return true;
         }

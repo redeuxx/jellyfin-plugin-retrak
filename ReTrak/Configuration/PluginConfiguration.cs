@@ -38,6 +38,11 @@ public class PluginConfiguration : BasePluginConfiguration
     /// <returns>All ReTrak users.</returns>
     public IReadOnlyList<ReTrakUser> GetAllReTrakUsers()
     {
+        if (ReTrakUsers is null || ReTrakUsers.Length == 0)
+        {
+            return Array.Empty<ReTrakUser>();
+        }
+
         return ReTrakUsers.ToList();
     }
 }
