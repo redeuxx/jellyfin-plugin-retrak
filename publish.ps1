@@ -167,6 +167,23 @@ function Update-BuildYaml {
     Set-Content -Path $Path -Value $content -NoNewline
 }
 
+function ConvertTo-ManifestJson {
+    param(
+        [object[]]$Plugins
+    )
+
+    if ($Plugins.Count -eq 0) {
+        return '[]'
+    }
+
+    # PowerShell 5.1 unwraps single-element arrays in ConvertTo-Json output.
+    if ($Plugins.Count -eq 1) {
+        return '[' + [Environment]::NewLine + ($Plugins[0] | ConvertTo-Json -Depth 10) + [Environment]::NewLine + ']'
+    }
+
+    return $Plugins | ConvertTo-Json -Depth 10
+}
+
 function Repair-Manifest {
     param(
         [string]$ManifestPath,
@@ -205,7 +222,7 @@ function Repair-Manifest {
     $versionEntry.checksum = $checksum
     $versionEntry.timestamp = $timestamp
 
-    $json = $plugins | ConvertTo-Json -Depth 10
+    $json = ConvertTo-ManifestJson -Plugins $plugins
     Set-Content -Path $ManifestPath -Value $json -NoNewline
 
     return $checksum
