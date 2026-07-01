@@ -72,22 +72,18 @@ dotnet publish ReTrak/ReTrak.csproj --configuration Release --output dist
 
 ## Configuration
 
-### Admin setup
+### Admin setup (all users)
+
+Like the official Trakt plugin, ReTrak is configured from the Jellyfin dashboard for each server user:
 
 1. Open **Dashboard > Plugins > ReTrak**.
 2. Set the **ReTrak URL** (defaults to `https://retrak.tv`).
-3. Select a Jellyfin user and paste their **ReTrak API key** (`dnt_...`).
-4. Adjust sync and scrobble options, then save.
+3. Choose a user from **Configure ReTrak for:**.
+4. Paste that user's **ReTrak API key** (`dnt_...`).
+5. Adjust import, sync, collection, and folder exclusion options, then click **Save**.
+6. Repeat for each Jellyfin user who should sync with ReTrak.
 
-### Per-user setup
-
-Users who are not admins can open this URL directly (replace the host with your server):
-
-```text
-https://<your-jellyfin-server>/web/index.html#!/configurationpage?name=retrakuser
-```
-
-They can enter their own API key and sync preferences there.
+Regular Jellyfin users cannot access the plugin settings page. An administrator configures keys and sync options on their behalf, the same way Trakt handles per-user authorization from the dashboard.
 
 ## Scheduled tasks
 

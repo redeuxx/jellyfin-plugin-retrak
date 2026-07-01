@@ -14,11 +14,11 @@ const ReTrakConfigurationPage = {
                     SkipWatchedImportFromReTrak: false,
                     SkipPlaybackProgressImportFromReTrak: false,
                     PostWatchedHistory: true,
-                    PostUnwatchedHistory: false,
+                    PostUnwatchedHistory: true,
                     PostSetWatched: true,
-                    PostSetUnwatched: false,
+                    PostSetUnwatched: true,
                     ExtraLogging: false,
-                    ExportMediaInfo: true,
+                    ExportMediaInfo: false,
                     SynchronizeCollections: true,
                     Scrobble: true,
                     DontRemoveItemFromReTrak: true
@@ -42,6 +42,7 @@ const ReTrakConfigurationPage = {
             ApiClient.getVirtualFolders(userId).then(function (result) {
                 ReTrakConfigurationPage.loadFolders(currentUserConfig, result, page);
             });
+            setApiKeyElements(page, !!currentUserConfig.AccessToken);
             Dashboard.hideLoadingMsg();
         });
     },
@@ -80,6 +81,16 @@ const ReTrakConfigurationPage = {
     }
 };
 
+function setApiKeyElements(page, hasApiKey) {
+    if (hasApiKey) {
+        page.querySelector('#authorizedDescription').classList.remove('hide');
+        page.querySelector('#clearApiKey').classList.remove('hide');
+    } else {
+        page.querySelector('#authorizedDescription').classList.add('hide');
+        page.querySelector('#clearApiKey').classList.add('hide');
+    }
+}
+
 function save(page) {
     return new Promise((resolve) => {
         const currentUserId = page.querySelector('#selectUser').value;
@@ -105,12 +116,12 @@ function save(page) {
             currentUserConfig.SynchronizeCollections = page.querySelector('#chkSyncCollections').checked;
             currentUserConfig.Scrobble = page.querySelector('#chkScrobble').checked;
             currentUserConfig.DontRemoveItemFromReTrak = page.querySelector('#chkDontRemoveItemFromReTrak').checked;
-            currentUserConfig.AccessToken = page.querySelector('#txtAccessToken').value;
+            currentUserConfig.AccessToken = page.querySelector('#txtAccessToken').value.trim();
             currentUserConfig.LinkedMbUserId = currentUserId;
             currentUserConfig.LocationsExcluded = Array.prototype.map.call(page.querySelectorAll('.chkReTrakLocation:checked'), elem => {
                 return elem.getAttribute('data-location');
             });
-            config.ReTrakUrl = page.querySelector('#txtReTrakUrl').value;
+            config.ReTrakUrl = page.querySelector('#txtReTrakUrl').value.trim();
             ApiClient.updatePluginConfiguration(ReTrakConfigurationPage.pluginUniqueId, config).then(function (result) {
                 Dashboard.processPluginConfigurationUpdateResult(result);
                 ApiClient.getUsers().then(function (users) {
@@ -134,6 +145,11 @@ export default function (view) {
         save(view);
         e.preventDefault();
         return false;
+    });
+
+    view.querySelector('#clearApiKey').addEventListener('click', function () {
+        view.querySelector('#txtAccessToken').value = '';
+        setApiKeyElements(view, false);
     });
 
     view.addEventListener('viewshow', function () {

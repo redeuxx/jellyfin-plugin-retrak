@@ -50,27 +50,13 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
         {
             new PluginPageInfo
             {
-                Name = "ReTrak",
+                Name = "retrak",
                 EmbeddedResourcePath = GetType().Namespace + ".Configuration.configPage.html",
             },
             new PluginPageInfo
             {
                 Name = "retrakjs",
                 EmbeddedResourcePath = GetType().Namespace + ".Configuration.configPage.js"
-            },
-            new PluginPageInfo
-            {
-                Name = "retrakuser",
-                DisplayName = "ReTrak",
-                EmbeddedResourcePath = GetType().Namespace + ".Configuration.userPage.html",
-                EnableInMainMenu = true,
-                MenuSection = "user",
-                MenuIcon = "live_tv"
-            },
-            new PluginPageInfo
-            {
-                Name = "retrakuserjs",
-                EmbeddedResourcePath = GetType().Namespace + ".Configuration.userPage.js"
             }
         };
     }

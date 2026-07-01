@@ -20,11 +20,11 @@ public class ReTrakUser
         SkipWatchedImportFromReTrak = false;
         SkipPlaybackProgressImportFromReTrak = false;
         PostWatchedHistory = true;
-        PostUnwatchedHistory = false;
+        PostUnwatchedHistory = true;
         PostSetWatched = true;
-        PostSetUnwatched = false;
+        PostSetUnwatched = true;
         ExtraLogging = false;
-        ExportMediaInfo = true;
+        ExportMediaInfo = false;
         SynchronizeCollections = true;
         Scrobble = true;
         LocationsExcluded = null;
