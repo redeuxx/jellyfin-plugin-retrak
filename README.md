@@ -12,8 +12,13 @@ ReTrak for Jellyfin is a server plugin that scrobbles playback progress and sync
 ## Requirements
 
 - Jellyfin 10.11+
-- .NET 9 SDK (for building from source)
 - A ReTrak account with an API key from **Settings**
+
+To build or publish from source:
+
+- [.NET 9 SDK](https://dotnet.microsoft.com/download)
+- [JPRM](https://pypi.org/project/jprm/) (`pip install jprm`) for catalog packaging
+- [GitHub CLI](https://cli.github.com/) (`gh auth login`) for releases
 
 ## Installation
 
@@ -35,15 +40,35 @@ ReTrak for Jellyfin is a server plugin that scrobbles playback progress and sync
 1. Download the latest plugin zip from [GitHub Releases](https://github.com/redeuxx/jellyfin-plugin-retrak/releases).
 2. Extract `ReTrak.dll` into `<jellyfin-data>/plugins/ReTrak/`.
 3. Ensure the plugin folder is writable by the Jellyfin service user.
+
+   ```bash
+   # Linux example
+   sudo chown -R jellyfin:jellyfin /var/lib/jellyfin/plugins/ReTrak
+   ```
+
 4. Restart Jellyfin.
 
 ### Build from source
 
-```bash
-dotnet publish ReTrak/ReTrak.csproj --configuration Release --output bin
+From the repo root, use the build script:
+
+```powershell
+.\build.ps1
 ```
 
-Copy `ReTrak.dll` into your Jellyfin `plugins/ReTrak` folder and restart the server.
+Output is written to `dist/ReTrak.dll`. Copy it into your Jellyfin plugins folder:
+
+```text
+<jellyfin-data>/plugins/ReTrak/ReTrak.dll
+```
+
+Then restart Jellyfin.
+
+You can also build with `dotnet` directly:
+
+```powershell
+dotnet publish ReTrak/ReTrak.csproj --configuration Release --output dist
+```
 
 ## Configuration
 
@@ -74,6 +99,86 @@ Two tasks appear under **Dashboard > Scheduled Tasks**:
 | Export library playstates to ReTrak | Pushes Jellyfin watch state and collections to ReTrak |
 
 Run these on a schedule that fits your library size and sync needs.
+
+## Developing and publishing
+
+These steps are for maintainers releasing a new plugin version.
+
+### Build only
+
+Build the DLL locally without changing version metadata or touching git:
+
+```powershell
+.\build.ps1
+```
+
+### Test a release build locally
+
+Build the plugin, create the JPRM catalog zip, and update `manifest-release/manifest.json` without pushing to GitHub:
+
+```powershell
+.\publish.ps1 -Version 1.0.2 -Changelog "Fix episode sync for multi-user setups" -SkipPublish
+```
+
+This writes:
+
+- `dist/ReTrak.dll`
+- `dist/retrak_1.0.2.0.zip` (catalog install package)
+
+### Publish a release to GitHub
+
+Publish a full release (version bump, manifest update, git tag, GitHub release):
+
+```powershell
+.\publish.ps1 -Version 1.0.2 -Changelog "Fix episode sync for multi-user setups"
+```
+
+You will be prompted to confirm before commit, push, and release creation.
+
+With custom GitHub release notes from a file:
+
+```powershell
+.\publish.ps1 `
+  -Version 1.0.2 `
+  -Changelog "Fix episode sync for multi-user setups" `
+  -ReleaseNotesFile .\release-notes.md
+```
+
+With inline release notes instead of a file:
+
+```powershell
+.\publish.ps1 `
+  -Version 1.0.2 `
+  -Changelog "Fix episode sync" `
+  -ReleaseNotes "Fixes episode sync when multiple Jellyfin users share one library."
+```
+
+Re-publish over an existing tag (use with care):
+
+```powershell
+.\publish.ps1 -Version 1.0.2 -Changelog "Fix episode sync" -Force
+```
+
+### Version format
+
+| You pass | Assembly / catalog version | Git tag | Zip filename |
+| --- | --- | --- | --- |
+| `1.0.2` | `1.0.2.0` | `v1.0.2` | `retrak_1.0.2.0.zip` |
+| `1.0.2.0` | `1.0.2.0` | `v1.0.2` | `retrak_1.0.2.0.zip` |
+
+### Publish prerequisites
+
+Install JPRM once:
+
+```powershell
+pip install jprm
+```
+
+Authenticate GitHub CLI once:
+
+```powershell
+gh auth login
+```
 
 ## Related projects
 

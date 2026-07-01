@@ -207,6 +207,7 @@ $RECYCLE.BIN/
 # Packages
 *.egg
 *.egg-info
+# Plugin build output (dotnet publish + JPRM packages)
 dist/
 build/
 eggs/
@@ -230,8 +231,18 @@ pip-log.txt
 .mr.developer.cfg
 
 #############
+## ReTrak publish / JPRM
+#############
+
+# Local copies JPRM may write when updating the catalog manifest
+manifest-release/retrak/
+
+# JPRM sidecar files (also land under dist/, which is ignored above)
+*.zip.meta.json
+*.zip.md5sum
+
+#############
 ## Rider
 #############
 .idea
-artifacts
-.idea
+artifacts/
